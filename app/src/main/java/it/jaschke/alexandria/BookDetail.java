@@ -120,9 +120,12 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
         String categories = data.getString(data.getColumnIndex(AlexandriaContract.CategoryEntry.CATEGORY));
         ((TextView) rootView.findViewById(R.id.categories)).setText(categories);
 
+        /* **PAA** Got rid of the custom back button in detail view (one-pane layout) so this is
+        // no longer needed
         if(rootView.findViewById(R.id.right_container)!=null){
             rootView.findViewById(R.id.backButton).setVisibility(View.INVISIBLE);
         }
+        */
 
     }
 
@@ -131,6 +134,10 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
 
     }
 
+    /* **PAA** This code was causing layout errors when using the app in a tablet. In portrait
+    // the layout would disappear when pressing the back button when in the detail view. In
+    // landscape mode when selecting a book the second time both the right and left containers
+    // wouldn't display any views
     @Override
     public void onPause() {
         super.onDestroyView();
@@ -138,4 +145,5 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
             getActivity().getSupportFragmentManager().popBackStack();
         }
     }
+    */
 }
