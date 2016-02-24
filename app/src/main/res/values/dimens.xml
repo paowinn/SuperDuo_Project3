@@ -5,6 +5,12 @@
     <dimen name="head_line">24sp</dimen>
     <dimen name="small_fontsize">12sp</dimen>
 
+    <!-- Dimensions for AddBook fragment -->
+    <dimen name="button_drawable_padding">10dp</dimen>
+    <dimen name="button_margin">20dp</dimen>
+    <dimen name="button_padding">10dp</dimen>
+    <dimen name="button_padding_end">20dp</dimen>
+
     <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
          https://developer.android.com/design/patterns/navigation-drawer.html -->
     <dimen name="navigation_drawer_width">240dp</dimen>
