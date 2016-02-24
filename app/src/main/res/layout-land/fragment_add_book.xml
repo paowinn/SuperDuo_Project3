@@ -95,33 +95,51 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_alignParentTop="true"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             >
 
-            <ImageButton
+            <Button
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
+                style="?android:attr/buttonStyle"
                 android:contentDescription="@string/cancel_button"
-                android:layout_weight="1"
-                android:src="@drawable/ic_action_discard"
-                style="?android:attr/buttonBarButtonStyle"
+                android:text="@string/cancel_button"
+                android:drawableStart="@drawable/ic_clear"
+                android:drawableLeft="@drawable/ic_clear"
+                android:drawablePadding="@dimen/button_drawable_padding"
+                android:layout_margin="@dimen/button_margin"
                 android:id="@+id/delete_button"
                 android:visibility="invisible"
+                android:paddingRight="@dimen/button_padding_end"
+                android:paddingEnd="@dimen/button_padding_end"
+                android:paddingLeft="@dimen/button_padding"
+                android:paddingStart="@dimen/button_padding"
+                android:paddingTop="@dimen/button_padding"
+                android:paddingBottom="@dimen/button_padding"
+
                 />
 
-            <ImageButton
+            <Button
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:contentDescription="@string/ok_button"
                 android:text="@string/ok_button"
-                android:layout_weight="1"
                 android:id="@+id/save_button"
                 android:visibility="invisible"
-                android:src="@drawable/ic_action_accept"
-                style="?android:attr/buttonBarButtonStyle"
+                android:drawableStart="@drawable/ic_add"
+                android:drawableLeft="@drawable/ic_add"
+                android:drawablePadding="@dimen/button_drawable_padding"
+                android:layout_margin="@dimen/button_margin"
+                style="?android:attr/buttonStyle"
                 android:layout_gravity="bottom"
+                android:paddingRight="@dimen/button_padding_end"
+                android:paddingEnd="@dimen/button_padding_end"
+                android:paddingLeft="@dimen/button_padding"
+                android:paddingStart="@dimen/button_padding"
+                android:paddingTop="@dimen/button_padding"
+                android:paddingBottom="@dimen/button_padding"
                 />
 
 

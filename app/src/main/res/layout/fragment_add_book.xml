@@ -101,12 +101,12 @@
 
             <Button
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/cancel_button"
                 style="?android:attr/buttonStyle"
                 android:id="@+id/delete_button"
-                android:drawableStart="@drawable/ic_action_discard"
-                android:drawableLeft="@drawable/ic_action_discard"
+                android:drawableStart="@drawable/ic_clear"
+                android:drawableLeft="@drawable/ic_clear"
                 android:drawablePadding="@dimen/button_drawable_padding"
                 android:visibility="invisible"
                 android:layout_margin="@dimen/button_margin"
@@ -120,12 +120,12 @@
 
             <Button
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/ok_button"
                 android:visibility="invisible"
                 android:id="@+id/save_button"
-                android:drawableStart="@drawable/ic_action_accept"
-                android:drawableLeft="@drawable/ic_action_accept"
+                android:drawableStart="@drawable/ic_add"
+                android:drawableLeft="@drawable/ic_add"
                 android:drawablePadding="@dimen/button_drawable_padding"
                 style="?android:attr/buttonStyle"
                 android:layout_margin="@dimen/button_margin"
