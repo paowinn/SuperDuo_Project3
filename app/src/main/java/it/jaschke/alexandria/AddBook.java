@@ -1,12 +1,12 @@
 package it.jaschke.alexandria;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Patterns;
@@ -16,13 +16,15 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import it.jaschke.alexandria.data.AlexandriaContract;
+import java.util.ArrayList;
+
 import it.jaschke.alexandria.services.BookService;
 import it.jaschke.alexandria.services.DownloadImage;
 
 
-public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class AddBook extends Fragment {
     private static final String TAG = "INTENT_TO_SCAN_ACTIVITY";
     private EditText ean;
     private final int LOADER_ID = 1;
@@ -33,6 +35,9 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
     private String mScanFormat = "Format:";
     private String mScanContents = "Contents:";
+
+    private Book book = null;
+    private ServiceBroadcastReceiver serviceBroadcastReceiver;
 
     // **PAA** Request code for BarcodeScannerActivity **
     static int SCAN_BOOK = 1;
@@ -53,6 +58,12 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
         rootView = inflater.inflate(R.layout.fragment_add_book, container, false);
         ean = (EditText) rootView.findViewById(R.id.ean);
+        serviceBroadcastReceiver = new ServiceBroadcastReceiver();
+
+        // **PAA** Register ServiceBroadcastReceiver to receive result (from fetching book service)
+        IntentFilter intentFilter = new IntentFilter(BookService.ACTION_BOOK_SERVICE);
+        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+        getActivity().registerReceiver(serviceBroadcastReceiver, intentFilter);
 
         ean.addTextChangedListener(new TextWatcher() {
             @Override
@@ -119,9 +130,11 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         return rootView;
     }
 
+    /*
     private void restartLoader(){
         getLoaderManager().restartLoader(LOADER_ID, null, this);
     }
+    */
 
     private void fetchBook(String ean){
 
@@ -130,9 +143,68 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         bookIntent.putExtra(BookService.EAN, ean);
         bookIntent.setAction(BookService.FETCH_BOOK);
         getActivity().startService(bookIntent);
-        AddBook.this.restartLoader();
+        // **PAA** The views in this fragment will be updated with the book info obtained from the
+        // fetch book service, therefore a loader is not needed since the book hasn't been inserted
+        // into the database yet
+        //AddBook.this.restartLoader();
     }
 
+    // **PAA** Define a broadcast receiver to get the result from the BookService (when fetching
+    // book
+    public class ServiceBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            book = intent.getParcelableExtra(BookService.EXTRA_RESULT);
+            Toast.makeText(getActivity(), "Receive Broadcast", Toast.LENGTH_SHORT).show();
+            // Since the book will not be inserted into the database until the user confirms it,
+            // the views in this fragment will be updated with the book info obtained from the
+            // fetch book service, therefore a loader is not needed
+            updateViews();
+        }
+    }
+
+    private void updateViews(){
+
+        if(book != null)
+            Toast.makeText(getActivity(), "BOOK NO ES NULO", Toast.LENGTH_SHORT).show();
+
+        else
+            Toast.makeText(getActivity(), "Book is NULL", Toast.LENGTH_SHORT).show();
+
+        if(book != null) {
+
+            ((TextView) rootView.findViewById(R.id.bookTitle)).setText(book.getTitle());
+            ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText(book.getSubtitle());
+
+            ArrayList<Author> authors = book.getAuthors();
+            ((TextView) rootView.findViewById(R.id.authors)).setLines(authors.size());
+            String authorsText= "";
+            for(int index=0; index<authors.size(); index++)
+                authorsText += (authors.get(index)).getName() + "\n";
+
+            ((TextView) rootView.findViewById(R.id.authors)).setText(authorsText);
+
+            String imgURL = book.getImgURL();
+            if (Patterns.WEB_URL.matcher(imgURL).matches()) {
+                new DownloadImage((ImageView) rootView.findViewById(R.id.bookCover)).execute(imgURL);
+                rootView.findViewById(R.id.bookCover).setVisibility(View.VISIBLE);
+            }
+
+            ArrayList<Category> categories = book.getCategories();
+            ((TextView) rootView.findViewById(R.id.categories)).setLines(categories.size());
+            String categoriesText= "";
+            for(int index=0; index<categories.size(); index++)
+                categoriesText += (categories.get(index)).getName() + "\n";
+
+            ((TextView) rootView.findViewById(R.id.categories)).setText(categoriesText);
+
+            rootView.findViewById(R.id.save_button).setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.delete_button).setVisibility(View.VISIBLE);
+        }
+    }
+
+    /*
     @Override
     public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if(ean.getText().length()==0){
@@ -151,7 +223,9 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                 null
         );
     }
+    */
 
+    /*
     @Override
     public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
         if (!data.moveToFirst()) {
@@ -167,7 +241,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         String authors = data.getString(data.getColumnIndex(AlexandriaContract.AuthorEntry.AUTHOR));
         String[] authorsArr = authors.split(",");
         ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
-        ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",","\n"));
+        ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",", "\n"));
         String imgUrl = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.IMAGE_URL));
         if(Patterns.WEB_URL.matcher(imgUrl).matches()){
             new DownloadImage((ImageView) rootView.findViewById(R.id.bookCover)).execute(imgUrl);
@@ -181,10 +255,14 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         rootView.findViewById(R.id.delete_button).setVisibility(View.VISIBLE);
     }
 
+    */
+
+    /*
     @Override
     public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
 
     }
+    */
 
     private void clearFields(){
         ((TextView) rootView.findViewById(R.id.bookTitle)).setText("");
@@ -207,12 +285,19 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         super.onActivityResult(requestCode, resultCode, data);
 
         // **PAA** Retrieve book's ISBN-13 barcode obtained from BarcodeScannerActivity
-        if((resultCode == getActivity().RESULT_FIRST_USER) && requestCode == SCAN_BOOK){
+        if((resultCode == Activity.RESULT_FIRST_USER) && requestCode == SCAN_BOOK){
 
             String barcode = data.getStringExtra(BarcodeScannerActivity.EXTRA_ISBN_13);
             // **PAA** Set the EditText view's text with the book's barcode obtained from the
             // scanner
             ean.setText(barcode);
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        getActivity().unregisterReceiver(serviceBroadcastReceiver);
     }
 }
