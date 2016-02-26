@@ -3,6 +3,7 @@ package it.jaschke.alexandria.services;
 import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -42,9 +43,11 @@ public class BookService extends IntentService {
 
     public static final String FETCH_BOOK = "it.jaschke.alexandria.services.action.FETCH_BOOK";
     public static final String DELETE_BOOK = "it.jaschke.alexandria.services.action.DELETE_BOOK";
+    public static final String ADD_BOOK = "it.jaschke.alexandria.services.action.ADD_BOOK";
     public static final String EXTRA_RESULT = "EXTRA_RESULT";
     public static final String ACTION_BOOK_SERVICE = "it.jaschke.alexandria.bookservice.RESPONSE";
     public static final String EAN = "it.jaschke.alexandria.services.extra.EAN";
+    public static final String EXTRA_BOOK = "it.jaschke.alexandria.services.extra.BOOK";
 
     public BookService() {
         super("Alexandria");
@@ -64,7 +67,6 @@ public class BookService extends IntentService {
                 intentResponse.setAction(ACTION_BOOK_SERVICE);
                 intentResponse.addCategory(Intent.CATEGORY_DEFAULT);
                 intentResponse.putExtra(EXTRA_RESULT, book);
-                intentResponse.putExtra("debug in Book Service: ", book.getTitle());
                 sendBroadcast(intentResponse);
             }
 
@@ -72,6 +74,13 @@ public class BookService extends IntentService {
                 final String ean = intent.getStringExtra(EAN);
                 deleteBook(ean);
             }
+
+            // **PAA** Defining AddBook service (separate from fetch book service)
+            else if (ADD_BOOK.equals(action)) {
+                final Book bookToAdd = intent.getParcelableExtra(EXTRA_BOOK);
+                addBook(bookToAdd);
+            }
+
         }
     }
 
@@ -83,6 +92,38 @@ public class BookService extends IntentService {
         if(ean!=null) {
             getContentResolver().delete(AlexandriaContract.BookEntry.buildBookUri(Long.parseLong(ean)), null, null);
         }
+    }
+
+    // **PAA** Defining a separate service that adds a book to the database
+    private void addBook(Book book){
+
+        if (book != null && book.getEan().length() == 13) {
+
+            // **PAA** Checking if the book already exists in the database so we don't try to insert
+            // it again
+            Cursor bookEntry = getContentResolver().query(
+                    AlexandriaContract.BookEntry.buildBookUri(Long.parseLong(book.getEan())),
+                    null, // leaving "columns" null just returns all the columns.
+                    null, // cols for "where" clause
+                    null, // values for "where" clause
+                    null  // sort order
+            );
+
+            if (bookEntry.getCount() > 0) {
+                bookEntry.close();
+                return;
+            }
+
+            bookEntry.close();
+
+            // **PAA** Add book and respective authors and categories to the database
+            writeBackBook(book.getEan(), book.getTitle(), book.getSubtitle(), book.getDescription(),
+                    book.getImgURL());
+            writeBackAuthors(book.getEan(), book.getAuthors());
+            writeBackCategories(book.getEan(), book.getCategories());
+
+        }
+
     }
 
     /**
@@ -296,26 +337,28 @@ public class BookService extends IntentService {
         getContentResolver().insert(AlexandriaContract.BookEntry.CONTENT_URI,values);
     }
 
-    private void writeBackAuthors(String ean, JSONArray jsonArray) throws JSONException {
+    // **PAA** This method now reads from an ArrayList<Author> instead of a JSONArray
+    private void writeBackAuthors(String ean, ArrayList<Author> authors) {
 
-        if(jsonArray != null) {
+        if(authors != null) {
             ContentValues values = new ContentValues();
-            for (int i = 0; i < jsonArray.length(); i++) {
+            for (int i = 0; i < authors.size(); i++) {
                 values.put(AlexandriaContract.AuthorEntry._ID, ean);
-                values.put(AlexandriaContract.AuthorEntry.AUTHOR, jsonArray.getString(i));
+                values.put(AlexandriaContract.AuthorEntry.AUTHOR, (authors.get(i)).getName());
                 getContentResolver().insert(AlexandriaContract.AuthorEntry.CONTENT_URI, values);
                 values = new ContentValues();
             }
         }
     }
 
-    private void writeBackCategories(String ean, JSONArray jsonArray) throws JSONException {
+    // **PAA** This method now reads from an ArrayList<Category> instead of a JSONArray
+    private void writeBackCategories(String ean, ArrayList<Category> categories){
 
-        if(jsonArray != null) {
+        if(categories != null) {
             ContentValues values = new ContentValues();
-            for (int i = 0; i < jsonArray.length(); i++) {
+            for (int i = 0; i < categories.size(); i++) {
                 values.put(AlexandriaContract.CategoryEntry._ID, ean);
-                values.put(AlexandriaContract.CategoryEntry.CATEGORY, jsonArray.getString(i));
+                values.put(AlexandriaContract.CategoryEntry.CATEGORY, (categories.get(i)).getName());
                 getContentResolver().insert(AlexandriaContract.CategoryEntry.CONTENT_URI, values);
                 values = new ContentValues();
             }

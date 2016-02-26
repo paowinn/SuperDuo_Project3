@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -78,12 +77,12 @@ public class AddBook extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                String ean =s.toString();
+                String ean = s.toString();
                 //catch isbn10 numbers
-                if(ean.length()==10 && !ean.startsWith("978")){
-                    ean="978"+ean;
+                if (ean.length() == 10 && !ean.startsWith("978")) {
+                    ean = "978" + ean;
                 }
-                if(ean.length()<13){
+                if (ean.length() < 13) {
                     clearFields();
                     return;
                 }
@@ -107,7 +106,14 @@ public class AddBook extends Fragment {
         rootView.findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                // **PAA** Add the book to the user's database when they click the "Add" button
+                Intent bookIntent = new Intent(getActivity(), BookService.class);
+                bookIntent.putExtra(BookService.EXTRA_BOOK, book);
+                bookIntent.setAction(BookService.ADD_BOOK);
+                getActivity().startService(bookIntent);
                 ean.setText("");
+                book = null;
             }
         });
 
@@ -156,7 +162,6 @@ public class AddBook extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             book = intent.getParcelableExtra(BookService.EXTRA_RESULT);
-            Toast.makeText(getActivity(), "Receive Broadcast", Toast.LENGTH_SHORT).show();
             // Since the book will not be inserted into the database until the user confirms it,
             // the views in this fragment will be updated with the book info obtained from the
             // fetch book service, therefore a loader is not needed
@@ -165,12 +170,6 @@ public class AddBook extends Fragment {
     }
 
     private void updateViews(){
-
-        if(book != null)
-            Toast.makeText(getActivity(), "BOOK NO ES NULO", Toast.LENGTH_SHORT).show();
-
-        else
-            Toast.makeText(getActivity(), "Book is NULL", Toast.LENGTH_SHORT).show();
 
         if(book != null) {
 
