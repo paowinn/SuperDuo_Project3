@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -112,6 +113,12 @@ public class AddBook extends Fragment {
                 bookIntent.putExtra(BookService.EXTRA_BOOK, book);
                 bookIntent.setAction(BookService.ADD_BOOK);
                 getActivity().startService(bookIntent);
+                if(book != null) {
+                    Toast.makeText(getActivity(),
+                            String.format(getResources().getString(R.string.book_added),
+                                    book.getTitle()),
+                            Toast.LENGTH_SHORT).show();
+                }
                 ean.setText("");
                 book = null;
             }
