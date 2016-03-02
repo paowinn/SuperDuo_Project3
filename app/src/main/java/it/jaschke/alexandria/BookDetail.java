@@ -78,7 +78,18 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
                 bookIntent.putExtra(BookService.EAN, ean);
                 bookIntent.setAction(BookService.DELETE_BOOK);
                 getActivity().startService(bookIntent);
-                getActivity().getSupportFragmentManager().popBackStack();
+
+                // **PAA** In one-pane layout so close the DetailActivity, otherwise
+                // clear the details fragment (in two-pane layout)
+                if (getActivity() instanceof BookDetailActivity) {
+                    ((BookDetailActivity)getActivity()).clearDetailsFragment(BookDetail.this);
+                    getActivity().finish();
+                }
+
+                else if(getActivity() instanceof MainActivity)
+                    ((MainActivity)getActivity()).clearDetailsFragment(BookDetail.this);
+
+
             }
         });
         return rootView;
@@ -160,6 +171,7 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
                 & Configuration.SCREENLAYOUT_SIZE_MASK)
                 >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
+
 
     @Override
     public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {

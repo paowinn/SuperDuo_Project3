@@ -74,9 +74,13 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 break;
             case 1:
                 nextFragment = new AddBook();
+                if(fragmentManager.findFragmentById(R.id.right_container) != null)
+                    clearDetailsFragment(fragmentManager.findFragmentById(R.id.right_container));
                 break;
             case 2:
                 nextFragment = new About();
+                if(fragmentManager.findFragmentById(R.id.right_container) != null)
+                    clearDetailsFragment(fragmentManager.findFragmentById(R.id.right_container));
                 break;
 
         }
@@ -189,5 +193,12 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         super.onBackPressed();
     }
 
+    public void clearDetailsFragment(Fragment bookDetailfragment) {
+
+        // **PAA** Only called when in two-pane layout
+            getSupportFragmentManager().beginTransaction()
+                    .remove(bookDetailfragment)
+                    .commit();
+    }
 
 }
