@@ -40,9 +40,11 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         IS_TABLET = isTablet();
-        if(IS_TABLET){
+
+        if(IS_TABLET)
             setContentView(R.layout.activity_main_tablet);
-        }else {
+
+        else {
             setContentView(R.layout.activity_main);
         }
 
@@ -99,6 +101,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         if (!navigationDrawerFragment.isDrawerOpen()) {
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
@@ -133,20 +136,27 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
     @Override
     public void onItemSelected(String ean) {
-        Bundle args = new Bundle();
-        args.putString(BookDetail.EAN_KEY, ean);
 
-        BookDetail fragment = new BookDetail();
-        fragment.setArguments(args);
+        if(findViewById(R.id.right_container) != null) {
 
-        int id = R.id.container;
-        if(findViewById(R.id.right_container) != null){
-            id = R.id.right_container;
+            // **PAA** In tablet landscape mode
+            Bundle args = new Bundle();
+            args.putString(BookDetail.EAN_KEY, ean);
+
+            BookDetail fragment = new BookDetail();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.right_container, fragment)
+                    .commit();
         }
-        getSupportFragmentManager().beginTransaction()
-                .replace(id, fragment)
-                .addToBackStack("Book Detail")
-                .commit();
+
+        else{
+            // **PAA** In phone layout or tablet portrait mode
+            Intent intent = new Intent(this, BookDetailActivity.class);
+            intent.putExtra(BookDetail.EAN_KEY, ean);
+            startActivity(intent);
+        }
 
     }
 

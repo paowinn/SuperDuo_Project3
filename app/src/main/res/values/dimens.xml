@@ -11,6 +11,10 @@
     <dimen name="button_padding">10dp</dimen>
     <dimen name="button_padding_end">20dp</dimen>
 
+    <!-- Dimensions for BookDetail fragment -->
+    <dimen name="left_margin_full_book">15dp</dimen>
+    <dimen name="right_margin_full_book">15dp</dimen>
+
     <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
          https://developer.android.com/design/patterns/navigation-drawer.html -->
     <dimen name="navigation_drawer_width">240dp</dimen>

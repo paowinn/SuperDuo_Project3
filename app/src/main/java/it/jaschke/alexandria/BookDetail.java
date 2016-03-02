@@ -1,6 +1,7 @@
 package it.jaschke.alexandria;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -46,12 +47,30 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         Bundle arguments = getArguments();
+
+        // **PAA** If in one-pane mode (cell phone or tablet portrait mode) get intent instead
+        if(arguments == null)
+            arguments = getActivity().getIntent().getExtras();
+
         if (arguments != null) {
             ean = arguments.getString(BookDetail.EAN_KEY);
             getLoaderManager().restartLoader(LOADER_ID, null, this);
         }
 
-        rootView = inflater.inflate(R.layout.fragment_full_book, container, false);
+        // **PAA** Check if Detail fragment in two-pane or one-pane mode to inflate appropriate
+        // layout
+        if (getActivity().findViewById(R.id.container) != null)
+            rootView = inflater.inflate(R.layout.fragment_full_book, container, false);
+
+        else {
+            // **PAA** If R.id.container is null it means we are in one-pane layout. So check
+            // if we need to display layout for phone or tablet
+            if (isTablet())
+                rootView = inflater.inflate(R.layout.fragment_full_book_wide, container, false);
+            else
+                rootView = inflater.inflate(R.layout.fragment_full_book, container, false);
+        }
+
         rootView.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,6 +87,7 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
         inflater.inflate(R.menu.book_detail, menu);
 
         MenuItem menuItem = menu.findItem(R.id.action_share);
@@ -86,6 +106,14 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
         );
     }
 
+    private Intent createShareIntent(){
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text)+bookTitle);
+        return shareIntent;
+    }
+
     @Override
     public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
         if (!data.moveToFirst()) {
@@ -95,11 +123,9 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
         bookTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.TITLE));
         ((TextView) rootView.findViewById(R.id.fullBookTitle)).setText(bookTitle);
 
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text)+bookTitle);
-        shareActionProvider.setShareIntent(shareIntent);
+        // **PAA** Ensure that onCreateOptionsMenu() has already been executed
+        if (shareActionProvider != null)
+            shareActionProvider.setShareIntent(createShareIntent());
 
         String bookSubTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.SUBTITLE));
         ((TextView) rootView.findViewById(R.id.fullBookSubTitle)).setText(bookSubTitle);
@@ -127,6 +153,12 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
         }
         */
 
+    }
+
+    private boolean isTablet() {
+        return (getActivity().getApplicationContext().getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK)
+                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
     @Override
