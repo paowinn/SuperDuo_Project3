@@ -54,7 +54,9 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
 
         if (arguments != null) {
             ean = arguments.getString(BookDetail.EAN_KEY);
-            getLoaderManager().restartLoader(LOADER_ID, null, this);
+
+            // **PAA** No need to discard data, call loader.init instead on onActivityCreated()
+            //getLoaderManager().restartLoader(LOADER_ID, null, this);
         }
 
         // **PAA** Check if Detail fragment in two-pane or one-pane mode to inflate appropriate
@@ -82,12 +84,10 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
                 // **PAA** In one-pane layout so close the DetailActivity, otherwise
                 // clear the details fragment (in two-pane layout)
                 if (getActivity() instanceof BookDetailActivity) {
-                    ((BookDetailActivity)getActivity()).clearDetailsFragment(BookDetail.this);
+                    ((BookDetailActivity) getActivity()).clearDetailsFragment(BookDetail.this);
                     getActivity().finish();
-                }
-
-                else if(getActivity() instanceof MainActivity)
-                    ((MainActivity)getActivity()).clearDetailsFragment(BookDetail.this);
+                } else if (getActivity() instanceof MainActivity)
+                    ((MainActivity) getActivity()).clearDetailsFragment(BookDetail.this);
 
 
             }
@@ -95,6 +95,14 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
         return rootView;
     }
 
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        // **PAA** To restore state after configuration changes or to initialize the loader if
+        // it hasn't been created yet
+        getLoaderManager().initLoader(LOADER_ID, null, this);
+        super.onActivityCreated(savedInstanceState);
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -107,6 +115,7 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
 
     @Override
     public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
         return new CursorLoader(
                 getActivity(),
                 AlexandriaContract.BookEntry.buildFullBookUri(Long.parseLong(ean)),
@@ -127,6 +136,7 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
 
     @Override
     public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
+
         if (!data.moveToFirst()) {
             return;
         }
@@ -175,7 +185,6 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
 
     @Override
     public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
-
     }
 
     /* **PAA** This code was causing layout errors when using the app in a tablet. In portrait
