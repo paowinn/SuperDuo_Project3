@@ -221,50 +221,53 @@ public class BookService extends IntentService {
             final String IMG_URL = "thumbnail";
 
             try {
-                JSONObject bookJson = new JSONObject(bookJsonString);
-                JSONArray bookArray;
-                if (bookJson.has(ITEMS)) {
-                    bookArray = bookJson.getJSONArray(ITEMS);
-                } else {
-                    Intent messageIntent = new Intent(MainActivity.MESSAGE_EVENT);
-                    messageIntent.putExtra(MainActivity.MESSAGE_KEY, getResources().getString(R.string.not_found));
-                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(messageIntent);
-                    return null;
-                }
 
-                JSONObject bookInfo = ((JSONObject) bookArray.get(0)).getJSONObject(VOLUME_INFO);
+                // **PAA** Make sure the JSON string was retrieved successfully
+                if (bookJsonString != null) {
+                    JSONObject bookJson = new JSONObject(bookJsonString);
+                    JSONArray bookArray;
+                    if (bookJson.has(ITEMS)) {
+                        bookArray = bookJson.getJSONArray(ITEMS);
+                    } else {
+                        Intent messageIntent = new Intent(MainActivity.MESSAGE_EVENT);
+                        messageIntent.putExtra(MainActivity.MESSAGE_KEY, getResources().getString(R.string.not_found));
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(messageIntent);
+                        return null;
+                    }
 
-                String title = bookInfo.getString(TITLE);
+                    JSONObject bookInfo = ((JSONObject) bookArray.get(0)).getJSONObject(VOLUME_INFO);
 
-                String subtitle = "";
-                if (bookInfo.has(SUBTITLE)) {
-                    subtitle = bookInfo.getString(SUBTITLE);
-                }
+                    String title = bookInfo.getString(TITLE);
 
-                String desc = "";
-                if (bookInfo.has(DESC)) {
-                    desc = bookInfo.getString(DESC);
-                }
+                    String subtitle = "";
+                    if (bookInfo.has(SUBTITLE)) {
+                        subtitle = bookInfo.getString(SUBTITLE);
+                    }
 
-                String imgUrl = "";
-                if (bookInfo.has(IMG_URL_PATH) && bookInfo.getJSONObject(IMG_URL_PATH).has(IMG_URL)) {
-                    imgUrl = bookInfo.getJSONObject(IMG_URL_PATH).getString(IMG_URL);
-                }
+                    String desc = "";
+                    if (bookInfo.has(DESC)) {
+                        desc = bookInfo.getString(DESC);
+                    }
 
-                // **PAA** Don't add the book by default just after fetching it. Allow the user
-                // to confirm the add by clicking the button "Add" or click "Cancel"
+                    String imgUrl = "";
+                    if (bookInfo.has(IMG_URL_PATH) && bookInfo.getJSONObject(IMG_URL_PATH).has(IMG_URL)) {
+                        imgUrl = bookInfo.getJSONObject(IMG_URL_PATH).getString(IMG_URL);
+                    }
 
-                ArrayList<Author> authors = new ArrayList<>();
-                ArrayList<Category> categories = new ArrayList<>();
+                    // **PAA** Don't add the book by default just after fetching it. Allow the user
+                    // to confirm the add by clicking the button "Add" or click "Cancel"
 
-                if (bookInfo.has(AUTHORS))
-                    authors = getAuthors(bookInfo.getJSONArray(AUTHORS));
+                    ArrayList<Author> authors = new ArrayList<>();
+                    ArrayList<Category> categories = new ArrayList<>();
 
-                if (bookInfo.has(CATEGORIES))
-                    categories = getCategories(bookInfo.getJSONArray(CATEGORIES));
+                    if (bookInfo.has(AUTHORS))
+                        authors = getAuthors(bookInfo.getJSONArray(AUTHORS));
 
-                return new Book(ean, title, subtitle, desc, imgUrl, authors,
-                        categories);
+                    if (bookInfo.has(CATEGORIES))
+                        categories = getCategories(bookInfo.getJSONArray(CATEGORIES));
+
+                    return new Book(ean, title, subtitle, desc, imgUrl, authors,
+                            categories);
 
                 /*
                 writeBackBook(ean, title, subtitle, desc, imgUrl);
@@ -276,6 +279,7 @@ public class BookService extends IntentService {
                     writeBackCategories(ean, bookInfo.getJSONArray(CATEGORIES));
                 }
                 */
+                }
 
             } catch (JSONException e) {
                 Log.e(LOG_TAG, "Error ", e);

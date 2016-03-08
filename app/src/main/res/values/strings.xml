@@ -27,6 +27,7 @@
     <string name="back_button">go back</string>
     <string name="share_text">A must read book: </string>
     <string name="book_added">The book \"%1$s\" has been added to your library.</string>
+    <string name="book_deleted">The book \"%1$s\" has been deleted from your library.</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="about_text">This application gets book information from a Google API. All titles, cover images, and author information come from there.
