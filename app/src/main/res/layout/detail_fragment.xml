@@ -43,7 +43,7 @@
             android:paddingRight="120dp"
             android:paddingEnd="120dp"
             android:text="@string/share_text"
-            android:contentDescription="@string/share_content_desc"/>
+            android:contentDescription="@string/a11y_share_content_desc"/>
     </FrameLayout>
 
 </LinearLayout>
