@@ -59,7 +59,7 @@ public class TodayScoresWidgetIntentService extends IntentService {
 
         // Get today's data from the ContentProvider
         Uri scoreWithDateUri = DatabaseContract.scores_table.buildScoreWithDate();
-        Date today = new Date(System.currentTimeMillis());
+        Date today = new Date(System.currentTimeMillis()+((0-2)*86400000));
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         todayDate[0] = format.format(today);
         Cursor data = getContentResolver().query(scoreWithDateUri, SCORES_COLUMNS, null,
