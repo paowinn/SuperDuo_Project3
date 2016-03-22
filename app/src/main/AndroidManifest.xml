@@ -41,11 +41,13 @@
             android:label="@string/title_widget_today_scores">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="barqsoft.footballscores.ACTION_DATA_UPDATED" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info_today_scores" />
         </receiver>
+        <service android:name=".widget.TodayScoresWidgetIntentService" />
     </application>
 
 </manifest>

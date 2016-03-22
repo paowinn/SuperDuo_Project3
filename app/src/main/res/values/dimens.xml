@@ -9,6 +9,15 @@
     <dimen name="League">15sp</dimen>
 
     <!-- Today Football Scores widget -->
-    <dimen name="widget_today_scores_default_width">40dp</dimen>
-    <dimen name="widget_today_scores_default_height">40dp</dimen>
+    <dimen name="widget_today_scores_default_width">330dp</dimen>
+    <dimen name="widget_today_scores_default_height">80dp</dimen>
+    <dimen name="widget_today_scores_min_resize_width">220dp</dimen>
+    <dimen name="widget_today_scores_min_resize_height">@dimen/widget_today_scores_default_height</dimen>
+    <dimen name="team_names_widget_small">10sp</dimen>
+    <dimen name="score_widget_small">18sp</dimen>
+    <dimen name="date_widget_small">12sp</dimen>
+    <dimen name="team_names_widget">12sp</dimen>
+    <dimen name="score_widget">20sp</dimen>
+    <dimen name="date_widget">14sp</dimen>
+
 </resources>
