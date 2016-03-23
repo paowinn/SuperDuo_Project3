@@ -23,6 +23,7 @@ import java.util.TimeZone;
 import java.util.Vector;
 
 import barqsoft.footballscores.DatabaseContract;
+import barqsoft.footballscores.PagerFragment;
 import barqsoft.footballscores.R;
 
 /**
@@ -41,8 +42,8 @@ public class myFetchService extends IntentService
     @Override
     protected void onHandleIntent(Intent intent)
     {
-        getData("n2");
-        getData("p2");
+        getData("n" + Integer.toString(PagerFragment.NUMBER_DAYS_QUERY));
+        getData("p" + Integer.toString(PagerFragment.NUMBER_DAYS_QUERY));
 
         return;
     }
@@ -223,7 +224,7 @@ public class myFetchService extends IntentService
 
                         if(!isReal){
                             //This if statement changes the dummy data's date to match our current date range.
-                            Date fragmentdate = new Date(System.currentTimeMillis()+((i-2)*86400000));
+                            Date fragmentdate = new Date(System.currentTimeMillis()+((i-PagerFragment.NUMBER_DAYS_QUERY)*86400000));
                             SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
                             mDate=mformat.format(fragmentdate);
                         }
