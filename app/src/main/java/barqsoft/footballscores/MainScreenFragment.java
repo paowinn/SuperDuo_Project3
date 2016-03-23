@@ -26,6 +26,7 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     private String[] fragmentdate = new String[1];
     private int last_selected_item = -1;
     private ListView score_list;
+    private static final String FRAG_DATE = "date";
 
     public MainScreenFragment()
     {
@@ -77,6 +78,14 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
                 mAdapter.notifyDataSetChanged();
             }
         });
+
+        // **PAA** Restore the fragment's date after a configuration change
+        if(savedInstanceState != null){
+            if(savedInstanceState.containsKey(FRAG_DATE)) {
+                fragmentdate[0] = savedInstanceState.getString(FRAG_DATE);
+            }
+        }
+
         return rootView;
     }
 
@@ -138,5 +147,14 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
         mAdapter.swapCursor(null);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
 
+        // **PAA** Save fragment's date before a configuration change in order to be restored
+        // later
+        if(fragmentdate[0] != null)
+          outState.putString(FRAG_DATE, fragmentdate[0]);
+
+        super.onSaveInstanceState(outState);
+    }
 }
