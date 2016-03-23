@@ -27,13 +27,16 @@ import barqsoft.footballscores.Utilies;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class DetailWidgetRemoteViewsService extends RemoteViewsService {
     public final String LOG_TAG = DetailWidgetRemoteViewsService.class.getSimpleName();
+    public static final String MATCH_ID_WIDGET = "match_id_widget";
+
     private static final String[] SCORES_COLUMNS = {
             DatabaseContract.SCORES_TABLE + "." + DatabaseContract.scores_table._ID,
             DatabaseContract.scores_table.HOME_COL,
             DatabaseContract.scores_table.AWAY_COL,
             DatabaseContract.scores_table.HOME_GOALS_COL,
             DatabaseContract.scores_table.AWAY_GOALS_COL,
-            DatabaseContract.scores_table.TIME_COL
+            DatabaseContract.scores_table.TIME_COL,
+            DatabaseContract.scores_table.MATCH_ID
     };
     // these indices must match the projection
     private static final int INDEX_SCORE_ID = 0;
@@ -42,6 +45,7 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
     private static final int INDEX_HOME_GOALS = 3;
     private static final int INDEX_AWAY_GOALS = 4;
     private static final int INDEX_TIME = 5;
+    private static final int INDEX_MATCH_ID = 6;
 
     private String[] todayDate = new String[1];
 
@@ -106,6 +110,7 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
 
                 String score = Utilies.getScores(data.getInt(INDEX_HOME_GOALS), data.getInt(INDEX_AWAY_GOALS));
                 String matchTime = data.getString(INDEX_TIME);
+                Double matchId = data.getDouble(INDEX_MATCH_ID);
 
                 // Add the data to the RemoteViews
                 views.setImageViewResource(R.id.home_crest, homeCrestResourceId);
@@ -121,9 +126,10 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
                 views.setTextViewText(R.id.score_textview, score);
                 views.setTextViewText(R.id.data_textview, matchTime);
 
+                // Pass to the intent the information on the match selected, so the
+                // app can display the appropriate details in its layout
                 final Intent fillInIntent = new Intent();
-                Uri scoreWithDateUri = DatabaseContract.scores_table.buildScoreWithDate();
-                fillInIntent.setData(scoreWithDateUri);
+                fillInIntent.putExtra(MATCH_ID_WIDGET, matchId.toString());
                 views.setOnClickFillInIntent(R.id.widget_list_item, fillInIntent);
                 return views;
             }

@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import barqsoft.footballscores.service.myFetchService;
+import barqsoft.footballscores.widget.DetailWidgetRemoteViewsService;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -46,13 +47,28 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
         final ListView score_list = (ListView) rootView.findViewById(R.id.scores_list);
         mAdapter = new scoresAdapter(getActivity(),null,0);
         score_list.setAdapter(mAdapter);
-        getLoaderManager().initLoader(SCORES_LOADER,null,this);
+        getLoaderManager().initLoader(SCORES_LOADER, null, this);
         mAdapter.detail_match_id = MainActivity.selected_match_id;
-        score_list.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
+
+        // **PAA** When the app is launched from the widget, obtain the selected match's id
+        // and provide the match's detail view in the app's layout
+        if(getActivity().getIntent().
+                getStringExtra(DetailWidgetRemoteViewsService.MATCH_ID_WIDGET) != null){
+
+            // **PAA** Notify the adapter that a match has been selected so it displays
+            // the appropriate detail view
+            mAdapter.detail_match_id = Double.parseDouble(getActivity().getIntent().
+                    getStringExtra(DetailWidgetRemoteViewsService.MATCH_ID_WIDGET));
+            MainActivity.selected_match_id = (int)mAdapter.detail_match_id;
+            mAdapter.notifyDataSetChanged();
+            // **PAA** Remove the match id from the intent to prevent the app from restoring
+            // to the original widget selected match every time the configuration changes
+            getActivity().getIntent().removeExtra(DetailWidgetRemoteViewsService.MATCH_ID_WIDGET);
+        }
+
+        score_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ViewHolder selected = (ViewHolder) view.getTag();
                 mAdapter.detail_match_id = selected.match_id;
                 MainActivity.selected_match_id = (int) selected.match_id;
