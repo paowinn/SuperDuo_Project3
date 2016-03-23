@@ -119,8 +119,11 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
 
             int pos = Integer.parseInt(getActivity().getIntent().
                     getStringExtra(DetailWidgetRemoteViewsService.SCROLL_POSITION_WIDGET));
-            score_list.setSelection(pos);
-            score_list.smoothScrollToPosition(pos);
+
+            if (pos != ListView.INVALID_POSITION) {
+                score_list.setSelection(pos);
+                score_list.smoothScrollToPosition(pos);
+            }
             // **PAA** Remove the scroll position from the intent to prevent the app from restoring
             // to the original widget selected item's scroll position every time the configuration
             // changes
