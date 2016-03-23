@@ -10,7 +10,7 @@ import android.view.MenuItem;
 public class MainActivity extends ActionBarActivity
 {
     public static int selected_match_id;
-    public static int current_fragment = 0;
+    public static int current_fragment = PagerFragment.NUMBER_DAYS_QUERY;
     public static String LOG_TAG = "MainActivity";
     private final String save_tag = "Save Test";
     private PagerFragment my_main;
