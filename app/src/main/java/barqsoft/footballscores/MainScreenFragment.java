@@ -25,6 +25,7 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     public static final int SCORES_LOADER = 0;
     private String[] fragmentdate = new String[1];
     private int last_selected_item = -1;
+    private ListView score_list;
 
     public MainScreenFragment()
     {
@@ -44,7 +45,7 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
                              final Bundle savedInstanceState) {
         update_scores();
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        final ListView score_list = (ListView) rootView.findViewById(R.id.scores_list);
+        score_list = (ListView) rootView.findViewById(R.id.scores_list);
         mAdapter = new scoresAdapter(getActivity(),null,0);
         score_list.setAdapter(mAdapter);
         getLoaderManager().initLoader(SCORES_LOADER, null, this);
@@ -65,6 +66,7 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
             // to the original widget selected match every time the configuration changes
             getActivity().getIntent().removeExtra(DetailWidgetRemoteViewsService.MATCH_ID_WIDGET);
         }
+
 
         score_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -108,6 +110,23 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
         //Log.v(FetchScoreTask.LOG_TAG,"Loader query: " + String.valueOf(i));
         mAdapter.swapCursor(cursor);
         //mAdapter.notifyDataSetChanged();
+
+        // **PAA** When the app is launched from the widget (after is done loading its data),
+        // obtain the position of the item selected so it can be set as the scrolled and selected
+        // position in the opened app
+        if(getActivity().getIntent().
+                getStringExtra(DetailWidgetRemoteViewsService.SCROLL_POSITION_WIDGET) != null){
+
+            int pos = Integer.parseInt(getActivity().getIntent().
+                    getStringExtra(DetailWidgetRemoteViewsService.SCROLL_POSITION_WIDGET));
+            score_list.setSelection(pos);
+            score_list.smoothScrollToPosition(pos);
+            // **PAA** Remove the scroll position from the intent to prevent the app from restoring
+            // to the original widget selected item's scroll position every time the configuration
+            // changes
+            getActivity().getIntent().removeExtra(DetailWidgetRemoteViewsService.SCROLL_POSITION_WIDGET);
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override

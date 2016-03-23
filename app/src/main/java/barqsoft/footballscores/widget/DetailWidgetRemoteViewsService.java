@@ -29,6 +29,7 @@ import barqsoft.footballscores.Utilies;
 public class DetailWidgetRemoteViewsService extends RemoteViewsService {
     public final String LOG_TAG = DetailWidgetRemoteViewsService.class.getSimpleName();
     public static final String MATCH_ID_WIDGET = "match_id_widget";
+    public static final String SCROLL_POSITION_WIDGET = "scroll_position_widget";
 
     private static final String[] SCORES_COLUMNS = {
             DatabaseContract.SCORES_TABLE + "." + DatabaseContract.scores_table._ID,
@@ -131,6 +132,7 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
                 // app can display the appropriate details in its layout
                 final Intent fillInIntent = new Intent();
                 fillInIntent.putExtra(MATCH_ID_WIDGET, matchId.toString());
+                fillInIntent.putExtra(SCROLL_POSITION_WIDGET, String.valueOf(position));
                 views.setOnClickFillInIntent(R.id.widget_list_item, fillInIntent);
                 return views;
             }
