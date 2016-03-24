@@ -18,7 +18,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import barqsoft.footballscores.DatabaseContract;
-import barqsoft.footballscores.PagerFragment;
 import barqsoft.footballscores.R;
 import barqsoft.footballscores.Utilies;
 
@@ -72,7 +71,7 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
                 final long identityToken = Binder.clearCallingIdentity();
                 // Get today's data from the ContentProvider
                 Uri scoreWithDateUri = DatabaseContract.scores_table.buildScoreWithDate();
-                Date today = new Date(System.currentTimeMillis()+((0-PagerFragment.NUMBER_DAYS_QUERY)*86400000));
+                Date today = new Date(System.currentTimeMillis()+((0)*86400000));
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                 todayDate[0] = format.format(today);
 

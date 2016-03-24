@@ -23,7 +23,6 @@ import java.util.Date;
 
 import barqsoft.footballscores.DatabaseContract;
 import barqsoft.footballscores.MainActivity;
-import barqsoft.footballscores.PagerFragment;
 import barqsoft.footballscores.R;
 import barqsoft.footballscores.Utilies;
 
@@ -60,7 +59,7 @@ public class TodayScoresWidgetIntentService extends IntentService {
 
         // Get today's data from the ContentProvider
         Uri scoreWithDateUri = DatabaseContract.scores_table.buildScoreWithDate();
-        Date today = new Date(System.currentTimeMillis()+((0-PagerFragment.NUMBER_DAYS_QUERY)*86400000));
+        Date today = new Date(System.currentTimeMillis()+((0)*86400000));
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         todayDate[0] = format.format(today);
         Cursor data = getContentResolver().query(scoreWithDateUri, SCORES_COLUMNS, null,
