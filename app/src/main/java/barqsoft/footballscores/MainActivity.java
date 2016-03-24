@@ -57,10 +57,10 @@ public class MainActivity extends ActionBarActivity
     protected void onSaveInstanceState(Bundle outState)
     {
         Log.v(save_tag,"will save");
-        Log.v(save_tag,"fragment: "+String.valueOf(my_main.mPagerHandler.getCurrentItem()));
-        Log.v(save_tag,"selected id: "+selected_match_id);
-        outState.putInt("Pager_Current",my_main.mPagerHandler.getCurrentItem());
-        outState.putInt("Selected_match",selected_match_id);
+        Log.v(save_tag, "fragment: " + String.valueOf(my_main.mPagerHandler.getCurrentItem()));
+        Log.v(save_tag, "selected id: " + selected_match_id);
+        outState.putInt("Pager_Current", my_main.mPagerHandler.getCurrentItem());
+        outState.putInt("Selected_match", selected_match_id);
         getSupportFragmentManager().putFragment(outState,"my_main",my_main);
         super.onSaveInstanceState(outState);
     }

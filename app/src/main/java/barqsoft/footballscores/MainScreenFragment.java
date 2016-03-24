@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import barqsoft.footballscores.service.myFetchService;
 import barqsoft.footballscores.widget.DetailWidgetRemoteViewsService;
@@ -26,6 +27,7 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     private String[] fragmentdate = new String[1];
     private int last_selected_item = -1;
     private ListView score_list;
+    private TextView mEmptyView;
     private static final String FRAG_DATE = "date";
 
     public MainScreenFragment()
@@ -47,8 +49,11 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
         update_scores();
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         score_list = (ListView) rootView.findViewById(R.id.scores_list);
+        mEmptyView = (TextView) rootView.findViewById(R.id.empty_view);
+        score_list.setEmptyView(mEmptyView);
         mAdapter = new scoresAdapter(getActivity(),null,0);
         score_list.setAdapter(mAdapter);
+        score_list.setContentDescription(getString(R.string.a11y_score_list, fragmentdate[0]));
         getLoaderManager().initLoader(SCORES_LOADER, null, this);
         mAdapter.detail_match_id = MainActivity.selected_match_id;
 

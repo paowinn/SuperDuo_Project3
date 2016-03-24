@@ -20,7 +20,7 @@ import java.util.Date;
  */
 public class PagerFragment extends Fragment
 {
-    public static final int NUMBER_DAYS_QUERY = 3;
+    public static final int NUMBER_DAYS_QUERY = 4;
     int NUM_PAGES = NUMBER_DAYS_QUERY*2 + 1;
 
     public ViewPager mPagerHandler;
